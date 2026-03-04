@@ -5,11 +5,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import TestimonialCard from '../components/TestimonialCard.astro';
-import { getCollection } from 'astro:content';
+import { getFeaturedProjects } from '../lib/projects';
 import homeHero from '../assets/heroes/home-hero.jpg';
 
-const allProjects = await getCollection('projects');
-const featuredProjects = allProjects.filter(p => p.data.featured);
+const featuredProjects = await getFeaturedProjects();
 
 const services = [
   { icon: '01', title: 'Architecture', desc: 'Full-service architectural design from concept through construction administration.' },
@@ -85,12 +84,12 @@ const testimonials = [
         {featuredProjects.map((project, i) => (
           <div class={`reveal reveal-delay-${i + 1}`}>
             <ProjectCard
-              title={project.data.title}
-              slug={project.data.slug}
-              category={project.data.category}
-              location={project.data.location}
-              year={project.data.year}
-              heroImage={project.data.heroImage}
+              title={project.title}
+              slug={project.slug}
+              category={project.category}
+              location={project.location}
+              year={project.year}
+              heroImage={project.heroImage as any}
             />
           </div>
         ))}

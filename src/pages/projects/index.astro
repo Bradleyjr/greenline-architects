@@ -1,13 +1,13 @@
 ---
-export const prerender = true;
+export const prerender = false;
 
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Hero from '../../components/Hero.astro';
 import ProjectCard from '../../components/ProjectCard.astro';
-import { getCollection } from 'astro:content';
+import { getAllProjects } from '../../lib/projects';
 import projectsHero from '../../assets/heroes/projects-hero.jpg';
 
-const allProjects = await getCollection('projects');
+const allProjects = await getAllProjects();
 const categories = ['All', 'Residential', 'Commercial', 'Civic'];
 ---
 
@@ -42,14 +42,14 @@ const categories = ['All', 'Residential', 'Commercial', 'Civic'];
       <h2 class="sr-only">All Projects</h2>
       <div class="projects-grid" id="projects-grid">
         {allProjects.map((project, i) => (
-          <div class={`projects-grid__item reveal reveal-delay-${(i % 4) + 1}`} data-category={project.data.category}>
+          <div class={`projects-grid__item reveal reveal-delay-${(i % 4) + 1}`} data-category={project.category}>
             <ProjectCard
-              title={project.data.title}
-              slug={project.data.slug}
-              category={project.data.category}
-              location={project.data.location}
-              year={project.data.year}
-              heroImage={project.data.heroImage}
+              title={project.title}
+              slug={project.slug}
+              category={project.category}
+              location={project.location}
+              year={project.year}
+              heroImage={project.heroImage as any}
             />
           </div>
         ))}

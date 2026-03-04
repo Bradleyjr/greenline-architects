@@ -50,8 +50,8 @@ const bodyHtml = blok.body ? renderRichText(blok.body) : '';
       </div>
     )}
     <div class="project-hero__content container">
-      <p class="label project-hero__category">{blok.category}</p>
-      <h1 class="project-hero__title">{blok.title}</h1>
+      <p class="label project-hero__category" data-blok-field="category">{blok.category}</p>
+      <h1 class="project-hero__title" data-blok-field="title">{blok.title}</h1>
     </div>
   </section>
 
@@ -73,13 +73,13 @@ const bodyHtml = blok.body ? renderRichText(blok.body) : '';
   <section class="section project-content">
     <div class="container container--narrow">
       {blok.description && (
-        <div class="project-content__intro reveal">
+        <div class="project-content__intro reveal" data-blok-field="description">
           <p class="project-content__lead">{blok.description}</p>
         </div>
       )}
       <hr class="divider" />
       {bodyHtml && (
-        <div class="project-content__body reveal" set:html={bodyHtml} />
+        <div class="project-content__body reveal" data-blok-field="body" set:html={bodyHtml} />
       )}
     </div>
   </section>
