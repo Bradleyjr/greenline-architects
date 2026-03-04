@@ -1,0 +1,39 @@
+---
+import { storyblokEditable } from '@storyblok/astro';
+
+const { blok } = Astro.props;
+---
+
+<div class="service-card" {...storyblokEditable(blok)}>
+  <span class="service-card__number">{blok.number}</span>
+  <h3 class="service-card__title">{blok.title}</h3>
+  <p class="service-card__description">{blok.description}</p>
+</div>
+
+<style>
+  .service-card {
+    padding: var(--space-7) 0;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .service-card__number {
+    display: block;
+    font-size: var(--text-xs);
+    color: var(--color-accent);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--space-4);
+  }
+
+  .service-card__title {
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-4);
+  }
+
+  .service-card__description {
+    font-size: var(--text-base);
+    color: var(--color-mid);
+    max-width: 55ch;
+    line-height: 1.7;
+  }
+</style>

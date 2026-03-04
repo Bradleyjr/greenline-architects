@@ -1,0 +1,224 @@
+---
+import { storyblokEditable, renderRichText } from '@storyblok/astro';
+import StoryblokComponent from '@storyblok/astro/StoryblokComponent.astro';
+
+const { blok } = Astro.props;
+const storyHtml = blok.story_text ? renderRichText(blok.story_text) : '';
+---
+
+<div {...storyblokEditable(blok)}>
+  <!-- Hero -->
+  <section class="hero hero--light">
+    {blok.hero_image?.filename && (
+      <div class="hero__image-wrap">
+        <img src={`${blok.hero_image.filename}/m/1600x900/filters:quality(80):format(webp)`} alt={blok.hero_image.alt || ''} class="hero__image" loading="eager" decoding="async" fetchpriority="high" width="1600" height="900" />
+        <div class="hero__overlay"></div>
+      </div>
+    )}
+    <div class="hero__content container">
+      <p class="hero__subtitle label">{blok.hero_subtitle}</p>
+      <h1 class="hero__title">{blok.hero_title}</h1>
+    </div>
+  </section>
+
+  <!-- Story -->
+  <section class="section about-story">
+    <div class="container">
+      <div class="about-story__grid">
+        <div class="about-story__content reveal">
+          <p class="label">{blok.story_label}</p>
+          <h2>{blok.story_heading}</h2>
+          <hr class="divider" />
+          {storyHtml && <div set:html={storyHtml} />}
+        </div>
+        {blok.story_image?.filename && (
+          <div class="about-story__image reveal reveal-delay-2">
+            <img src={`${blok.story_image.filename}/m/800x1000/filters:quality(80):format(webp)`} alt={blok.story_image.alt || ''} loading="lazy" decoding="async" width="800" height="1000" />
+          </div>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <!-- Values -->
+  <section class="section about-values">
+    <div class="container">
+      <div class="about-values__header reveal">
+        <p class="label">{blok.values_label}</p>
+        <h2>{blok.values_heading}</h2>
+      </div>
+      <div class="about-values__grid">
+        {blok.values?.map((v: any) => (
+          <StoryblokComponent blok={v} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Team -->
+  <section class="section about-team">
+    <div class="container">
+      <div class="about-team__header reveal">
+        <p class="label">{blok.team_label}</p>
+        <h2>{blok.team_heading}</h2>
+        <p class="about-team__intro">{blok.team_intro}</p>
+      </div>
+      <div class="about-team__grid">
+        {blok.team_members?.map((m: any) => (
+          <StoryblokComponent blok={m} />
+        ))}
+      </div>
+    </div>
+  </section>
+</div>
+
+<style>
+  /* Hero */
+  .hero {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    padding: calc(var(--nav-height) + var(--space-8)) 0 var(--space-9);
+  }
+  .hero--light {
+    color: var(--color-light);
+  }
+  .hero__image-wrap {
+    position: absolute;
+    inset: 0;
+  }
+  .hero__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .hero__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(26,26,26,0.6) 0%, rgba(26,26,26,0.15) 50%, transparent 100%);
+  }
+  .hero__content {
+    position: relative;
+    z-index: 1;
+  }
+  .hero__subtitle {
+    margin-bottom: var(--space-5);
+  }
+  .hero--light .hero__subtitle {
+    color: rgba(245, 242, 237, 0.7);
+  }
+  .hero__title {
+    max-width: 14ch;
+  }
+
+  /* Story */
+  .about-story__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-9);
+    align-items: start;
+  }
+
+  @media (min-width: 1024px) {
+    .about-story__grid {
+      grid-template-columns: 1.2fr 1fr;
+    }
+  }
+
+  .about-story__content h2 {
+    margin-top: var(--space-4);
+  }
+
+  .about-story__content p {
+    color: var(--color-mid);
+    line-height: 1.8;
+    margin-bottom: var(--space-5);
+  }
+
+  .about-story__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    aspect-ratio: 4 / 5;
+  }
+
+  /* Values */
+  .about-values {
+    background: var(--color-dark);
+    color: var(--color-light);
+  }
+
+  .about-values__header {
+    margin-bottom: var(--space-9);
+  }
+
+  .about-values__header .label {
+    color: var(--color-accent);
+  }
+
+  .about-values__header h2 {
+    margin-top: var(--space-4);
+  }
+
+  .about-values__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 640px) {
+    .about-values__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .about-values__item {
+    padding: var(--space-7);
+    border: 1px solid rgba(245, 242, 237, 0.1);
+  }
+
+  .about-values__item h3 {
+    font-size: var(--text-xl);
+    margin-bottom: var(--space-4);
+  }
+
+  .about-values__item p {
+    font-size: var(--text-sm);
+    color: rgba(245, 242, 237, 0.6);
+    line-height: 1.7;
+  }
+
+  /* Team */
+  .about-team__header {
+    margin-bottom: var(--space-9);
+  }
+
+  .about-team__header h2 {
+    margin-top: var(--space-4);
+    margin-bottom: var(--space-4);
+  }
+
+  .about-team__intro {
+    font-size: var(--text-lg);
+    color: var(--color-mid);
+    max-width: 50ch;
+  }
+
+  .about-team__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+  }
+
+  @media (min-width: 640px) {
+    .about-team__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .about-team__grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+</style>

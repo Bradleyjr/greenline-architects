@@ -1,12 +1,36 @@
 ---
-export const prerender = true;
+export const prerender = false;
 
 import BaseLayout from '../layouts/BaseLayout.astro';
+import StoryblokComponent from '@storyblok/astro/StoryblokComponent.astro';
+import { getLiveStory, useStoryblokApi } from '@storyblok/astro';
 import Hero from '../components/Hero.astro';
 import ContactForm from '../components/ContactForm.astro';
 import contactHero from '../assets/heroes/contact-hero.jpg';
+
+// Try Storyblok first
+let storyblokStory = await getLiveStory(Astro);
+if (!storyblokStory) {
+  try {
+    const storyblokApi = useStoryblokApi();
+    const { data } = await storyblokApi.get('cdn/stories/contact', { version: 'draft' });
+    storyblokStory = data.story;
+  } catch {
+    // Fall through to hardcoded
+  }
+}
+
+const isStoryblok = !!storyblokStory;
 ---
 
+{isStoryblok ? (
+  <BaseLayout
+    title={`${storyblokStory.name} — Greenline Architects`}
+    description={storyblokStory.content.form_intro || ''}
+  >
+    <StoryblokComponent blok={storyblokStory.content} />
+  </BaseLayout>
+) : (
 <BaseLayout
   title="Contact — Greenline Architects"
   description="Get in touch with Greenline Architects. Visit our Atlanta office, call us, or send a message about your next project."
@@ -70,6 +94,7 @@ import contactHero from '../assets/heroes/contact-hero.jpg';
     </div>
   </section>
 </BaseLayout>
+)}
 
 <style>
   .contact-page__grid {

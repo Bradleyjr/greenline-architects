@@ -1,0 +1,165 @@
+---
+import { storyblokEditable } from '@storyblok/astro';
+import ContactForm from '../components/ContactForm.astro';
+
+const { blok } = Astro.props;
+const addressLines = (blok.address || '').split('\n');
+const hoursLines = (blok.office_hours || '').split('\n');
+---
+
+<div {...storyblokEditable(blok)}>
+  <!-- Hero -->
+  <section class="hero hero--light">
+    {blok.hero_image?.filename && (
+      <div class="hero__image-wrap">
+        <img src={`${blok.hero_image.filename}/m/1600x900/filters:quality(80):format(webp)`} alt={blok.hero_image.alt || ''} class="hero__image" loading="eager" decoding="async" fetchpriority="high" width="1600" height="900" />
+        <div class="hero__overlay"></div>
+      </div>
+    )}
+    <div class="hero__content container">
+      <p class="hero__subtitle label">{blok.hero_subtitle}</p>
+      <h1 class="hero__title">{blok.hero_title}</h1>
+    </div>
+  </section>
+
+  <section class="section contact-page">
+    <div class="container">
+      <div class="contact-page__grid">
+        <div class="contact-page__form reveal">
+          <h2>{blok.form_heading}</h2>
+          <p class="contact-page__form-intro">{blok.form_intro}</p>
+          <ContactForm />
+        </div>
+        <aside class="contact-page__info reveal reveal-delay-2">
+          <div class="contact-page__block">
+            <h3 class="label">Visit Our Office</h3>
+            <address class="contact-page__address">
+              {addressLines.map((line: string, i: number) => (
+                <Fragment>{line}{i < addressLines.length - 1 && <br />}</Fragment>
+              ))}
+            </address>
+          </div>
+          <div class="contact-page__block">
+            <h3 class="label">Reach Out Directly</h3>
+            <p><a href={`tel:${blok.phone?.replace(/[^+\d]/g, '')}`}>{blok.phone}</a></p>
+            <p><a href={`mailto:${blok.email}`}>{blok.email}</a></p>
+          </div>
+          <div class="contact-page__block">
+            <h3 class="label">Office Hours</h3>
+            {hoursLines.map((line: string) => (
+              <p>{line}</p>
+            ))}
+          </div>
+          {blok.map_embed_url && (
+            <div class="contact-page__map" aria-label="Office location map">
+              <iframe src={blok.map_embed_url} width="100%" height="280" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Greenline Architects office location"></iframe>
+            </div>
+          )}
+        </aside>
+      </div>
+    </div>
+  </section>
+</div>
+
+<style>
+  /* Hero */
+  .hero {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    padding: calc(var(--nav-height) + var(--space-8)) 0 var(--space-9);
+  }
+  .hero--light {
+    color: var(--color-light);
+  }
+  .hero__image-wrap {
+    position: absolute;
+    inset: 0;
+  }
+  .hero__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .hero__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(26,26,26,0.6) 0%, rgba(26,26,26,0.15) 50%, transparent 100%);
+  }
+  .hero__content {
+    position: relative;
+    z-index: 1;
+  }
+  .hero__subtitle {
+    margin-bottom: var(--space-5);
+  }
+  .hero--light .hero__subtitle {
+    color: rgba(245, 242, 237, 0.7);
+  }
+  .hero__title {
+    max-width: 14ch;
+  }
+
+  /* Contact Page */
+  .contact-page__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-11);
+  }
+
+  @media (min-width: 1024px) {
+    .contact-page__grid {
+      grid-template-columns: 1.4fr 1fr;
+      gap: var(--space-12);
+    }
+  }
+
+  .contact-page__form h2 {
+    font-size: var(--text-3xl);
+    margin-bottom: var(--space-4);
+  }
+
+  .contact-page__form-intro {
+    color: var(--color-mid);
+    margin-bottom: var(--space-8);
+    max-width: 50ch;
+  }
+
+  .contact-page__info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-7);
+  }
+
+  .contact-page__block .label {
+    margin-bottom: var(--space-3);
+    display: block;
+  }
+
+  .contact-page__address {
+    font-style: normal;
+    line-height: 1.8;
+  }
+
+  .contact-page__block p {
+    line-height: 1.8;
+  }
+
+  .contact-page__block a {
+    color: var(--color-dark);
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .contact-page__block a:hover {
+    color: var(--color-accent);
+  }
+
+  .contact-page__map {
+    overflow: hidden;
+    background: var(--color-dark-10);
+  }
+
+  .contact-page__map iframe {
+    display: block;
+  }
+</style>

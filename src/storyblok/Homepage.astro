@@ -1,98 +1,48 @@
 ---
-export const prerender = false;
-
-import BaseLayout from '../layouts/BaseLayout.astro';
+import { storyblokEditable, renderRichText } from '@storyblok/astro';
 import StoryblokComponent from '@storyblok/astro/StoryblokComponent.astro';
-import { getLiveStory, useStoryblokApi } from '@storyblok/astro';
-import Hero from '../components/Hero.astro';
 import ProjectCard from '../components/ProjectCard.astro';
-import TestimonialCard from '../components/TestimonialCard.astro';
 import { getFeaturedProjects } from '../lib/projects';
-import homeHero from '../assets/heroes/home-hero.jpg';
 
-// Try Storyblok first
-let storyblokStory = await getLiveStory(Astro);
-if (!storyblokStory) {
-  try {
-    const storyblokApi = useStoryblokApi();
-    const { data } = await storyblokApi.get('cdn/stories/home', { version: 'draft' });
-    storyblokStory = data.story;
-  } catch {
-    // Fall through to hardcoded
-  }
-}
-
-const featuredProjects = storyblokStory ? [] : await getFeaturedProjects();
-
-const services = [
-  { icon: '01', title: 'Architecture', desc: 'Full-service architectural design from concept through construction administration.' },
-  { icon: '02', title: 'Interior Design', desc: 'Interior environments that extend and refine the architectural vision.' },
-  { icon: '03', title: 'Urban Planning', desc: 'Master plans and urban strategies that shape communities over decades.' },
-];
-
-const testimonials = [
-  {
-    quote: "Greenline transformed our vision into something far more considered and beautiful than we imagined. They listened with extraordinary care and then pushed the design in directions we never would have found on our own.",
-    author: "Catherine & James Wright",
-    role: "Riverfront Residence Clients"
-  },
-  {
-    quote: "Working with this team redefined what we thought a civic building could be. They brought genuine community voice into every design decision, and the result is a building that belongs to everyone.",
-    author: "Marcus Townsend",
-    role: "Director, City of Atlanta Department of Cultural Affairs"
-  },
-];
-
-const isStoryblok = !!storyblokStory;
+const { blok } = Astro.props;
+const featuredProjects = await getFeaturedProjects();
 ---
 
-{isStoryblok ? (
-  <BaseLayout
-    title={`${storyblokStory.content.hero_title || storyblokStory.name} — Greenline Architects`}
-    description={storyblokStory.content.hero_description || ''}
-  >
-    <StoryblokComponent blok={storyblokStory.content} />
-  </BaseLayout>
-) : (
-<BaseLayout
-  title="Greenline Architects — Atlanta Architecture Firm"
-  description="Award-winning architecture firm in Atlanta, GA. We design residential, commercial, and civic spaces that honor their context and the people who inhabit them."
->
+<div {...storyblokEditable(blok)}>
   <!-- Hero -->
-  <Hero
-    title="Architecture rooted in place"
-    subtitle="Greenline Architects — Atlanta, GA"
-    image={homeHero}
-    imageAlt="Modern architectural facade with geometric concrete forms and natural light"
-    fullHeight={true}
-    lightText={true}
-  >
-    <p class="hero__desc">We design buildings that belong where they stand — shaped by landscape, light, and the lives they shelter.</p>
-    <div class="hero__actions">
-      <a href="/projects" class="btn btn--light">View Our Work</a>
-      <a href="/contact" class="btn btn--outline btn--outline-light">Start a Conversation</a>
+  <section class="hero hero--full hero--light">
+    {blok.hero_image?.filename && (
+      <div class="hero__image-wrap">
+        <img src={`${blok.hero_image.filename}/m/1600x900/filters:quality(80):format(webp)`} alt={blok.hero_image.alt || ''} class="hero__image" loading="eager" decoding="async" fetchpriority="high" width="1600" height="900" />
+        <div class="hero__overlay"></div>
+      </div>
+    )}
+    <div class="hero__content container">
+      <p class="hero__subtitle label">{blok.hero_subtitle}</p>
+      <h1 class="hero__title">{blok.hero_title}</h1>
+      <p class="hero__desc">{blok.hero_description}</p>
+      <div class="hero__actions">
+        <a href={blok.hero_cta_1_link} class="btn btn--light">{blok.hero_cta_1_text}</a>
+        <a href={blok.hero_cta_2_link} class="btn btn--outline btn--outline-light">{blok.hero_cta_2_text}</a>
+      </div>
     </div>
-  </Hero>
+  </section>
 
-  <!-- Services Overview -->
+  <!-- Services -->
   <section class="section home-services">
     <div class="container">
       <div class="home-services__header reveal">
-        <p class="label">What We Do</p>
-        <h2>Design with<br />intention</h2>
-        <p class="home-services__intro">Every project begins with a deep understanding of site, program, and the people who will use the space. We work across scales — from private residences to civic landmarks — with the same commitment to craft and context.</p>
+        <p class="label">{blok.services_label}</p>
+        <h2>{blok.services_heading}</h2>
+        <p class="home-services__intro">{blok.services_intro}</p>
       </div>
       <div class="home-services__grid">
-        {services.map((s, i) => (
-          <div class={`home-services__item reveal reveal-delay-${i + 1}`}>
-            <span class="home-services__number">{s.icon}</span>
-            <h3 class="home-services__title">{s.title}</h3>
-            <p class="home-services__desc">{s.desc}</p>
-          </div>
+        {blok.services?.map((card: any) => (
+          <StoryblokComponent blok={card} />
         ))}
       </div>
       <div class="home-services__cta reveal">
-        <a href="/services" class="btn btn--outline">All Services</a>
+        <a href={blok.services_cta_link} class="btn btn--outline">{blok.services_cta_text}</a>
       </div>
     </div>
   </section>
@@ -101,11 +51,11 @@ const isStoryblok = !!storyblokStory;
   <section class="section home-projects">
     <div class="container">
       <div class="home-projects__header reveal">
-        <p class="label">Selected Work</p>
-        <h2>Projects that<br />define us</h2>
+        <p class="label">{blok.projects_label}</p>
+        <h2>{blok.projects_heading}</h2>
       </div>
       <div class="home-projects__grid">
-        {featuredProjects.map((project, i) => (
+        {featuredProjects.map((project: any, i: number) => (
           <div class={`reveal reveal-delay-${i + 1}`}>
             <ProjectCard
               title={project.title}
@@ -113,7 +63,7 @@ const isStoryblok = !!storyblokStory;
               category={project.category}
               location={project.location}
               year={project.year}
-              heroImage={project.heroImage as any}
+              heroImage={project.heroImage}
             />
           </div>
         ))}
@@ -128,13 +78,11 @@ const isStoryblok = !!storyblokStory;
   <section class="section home-testimonials">
     <div class="container">
       <div class="home-testimonials__header reveal">
-        <p class="label">Client Voices</p>
+        <p class="label">{blok.testimonials_label}</p>
       </div>
       <div class="home-testimonials__grid">
-        {testimonials.map((t, i) => (
-          <div class={`reveal reveal-delay-${i + 1}`}>
-            <TestimonialCard quote={t.quote} author={t.author} role={t.role} />
-          </div>
+        {blok.testimonials?.map((t: any) => (
+          <StoryblokComponent blok={t} />
         ))}
       </div>
     </div>
@@ -144,16 +92,57 @@ const isStoryblok = !!storyblokStory;
   <section class="home-cta">
     <div class="home-cta__inner container">
       <div class="home-cta__content reveal">
-        <h2>Let's build something<br />that lasts</h2>
-        <p>Every great project begins with a conversation. Tell us about your site, your vision, and the kind of place you want to create.</p>
-        <a href="/contact" class="btn btn--accent">Get in Touch</a>
+        <h2>{blok.cta_heading}</h2>
+        <p>{blok.cta_text}</p>
+        <a href={blok.cta_button_link} class="btn btn--accent">{blok.cta_button_text}</a>
       </div>
     </div>
   </section>
-</BaseLayout>
-)}
+</div>
 
 <style>
+  /* Hero */
+  .hero {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    padding: calc(var(--nav-height) + var(--space-8)) 0 var(--space-9);
+  }
+  .hero--full {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+  .hero--light {
+    color: var(--color-light);
+  }
+  .hero__image-wrap {
+    position: absolute;
+    inset: 0;
+  }
+  .hero__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .hero__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(26,26,26,0.6) 0%, rgba(26,26,26,0.15) 50%, transparent 100%);
+  }
+  .hero__content {
+    position: relative;
+    z-index: 1;
+  }
+  .hero__subtitle {
+    margin-bottom: var(--space-5);
+  }
+  .hero--light .hero__subtitle {
+    color: rgba(245, 242, 237, 0.7);
+  }
+  .hero__title {
+    max-width: 14ch;
+  }
+
   /* Hero extras */
   .hero__desc {
     font-size: var(--text-lg);

@@ -1,10 +1,24 @@
 ---
-export const prerender = true;
+export const prerender = false;
 
 import BaseLayout from '../layouts/BaseLayout.astro';
+import StoryblokComponent from '@storyblok/astro/StoryblokComponent.astro';
+import { getLiveStory, useStoryblokApi } from '@storyblok/astro';
 import Hero from '../components/Hero.astro';
 import ServiceCard from '../components/ServiceCard.astro';
 import servicesHero from '../assets/heroes/about-hero.jpg';
+
+// Try Storyblok first
+let storyblokStory = await getLiveStory(Astro);
+if (!storyblokStory) {
+  try {
+    const storyblokApi = useStoryblokApi();
+    const { data } = await storyblokApi.get('cdn/stories/services', { version: 'draft' });
+    storyblokStory = data.story;
+  } catch {
+    // Fall through to hardcoded
+  }
+}
 
 const services = [
   {
@@ -38,8 +52,18 @@ const services = [
     description: 'Environmental responsibility is embedded in our process, not treated as an add-on. We pursue LEED, Passive House, and Living Building Challenge certifications where appropriate, and we always prioritize passive strategies — orientation, daylighting, natural ventilation — before reaching for mechanical solutions.',
   },
 ];
+
+const isStoryblok = !!storyblokStory;
 ---
 
+{isStoryblok ? (
+  <BaseLayout
+    title={`${storyblokStory.name} — Greenline Architects`}
+    description={storyblokStory.content.intro_text || ''}
+  >
+    <StoryblokComponent blok={storyblokStory.content} />
+  </BaseLayout>
+) : (
 <BaseLayout
   title="Services — Greenline Architects"
   description="Explore the full range of architectural services offered by Greenline Architects, including design, interior architecture, master planning, and sustainable design."
@@ -77,6 +101,7 @@ const services = [
     </div>
   </section>
 </BaseLayout>
+)}
 
 <style>
   .services-page__intro {

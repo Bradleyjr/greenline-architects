@@ -20,6 +20,14 @@ export default defineConfig({
       components: {
         'project': 'storyblok/Project',
         'page': 'storyblok/Page',
+        'homepage': 'storyblok/Homepage',
+        'about_page': 'storyblok/AboutPage',
+        'services_page': 'storyblok/ServicesPage',
+        'contact_page': 'storyblok/ContactPage',
+        'service_card': 'storyblok/ServiceCard',
+        'testimonial': 'storyblok/Testimonial',
+        'value_card': 'storyblok/ValueCard',
+        'team_member': 'storyblok/TeamMemberBlok',
       },
       apiOptions: {
         region: 'us',

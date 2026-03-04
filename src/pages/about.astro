@@ -1,8 +1,10 @@
 ---
-export const prerender = true;
+export const prerender = false;
 
 import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import StoryblokComponent from '@storyblok/astro/StoryblokComponent.astro';
+import { getLiveStory, useStoryblokApi } from '@storyblok/astro';
 import Hero from '../components/Hero.astro';
 import TeamMember from '../components/TeamMember.astro';
 import aboutHero from '../assets/heroes/about-hero.jpg';
@@ -11,6 +13,18 @@ import elenaImg from '../assets/team/elena-vasquez.jpg';
 import davidImg from '../assets/team/david-chen.jpg';
 import amaraImg from '../assets/team/amara-okafor.jpg';
 import jamesImg from '../assets/team/james-whitfield.jpg';
+
+// Try Storyblok first
+let storyblokStory = await getLiveStory(Astro);
+if (!storyblokStory) {
+  try {
+    const storyblokApi = useStoryblokApi();
+    const { data } = await storyblokApi.get('cdn/stories/about', { version: 'draft' });
+    storyblokStory = data.story;
+  } catch {
+    // Fall through to hardcoded
+  }
+}
 
 const team = [
   {
@@ -57,8 +71,18 @@ const values = [
     desc: 'We design for the next hundred years, not the next hundred likes. Durability, adaptability, and timelessness guide every decision we make.',
   },
 ];
+
+const isStoryblok = !!storyblokStory;
 ---
 
+{isStoryblok ? (
+  <BaseLayout
+    title={`${storyblokStory.name} — Greenline Architects`}
+    description={storyblokStory.content.hero_title || ''}
+  >
+    <StoryblokComponent blok={storyblokStory.content} />
+  </BaseLayout>
+) : (
 <BaseLayout
   title="About — Greenline Architects"
   description="Learn about Greenline Architects — our story, our team, and our approach to designing buildings that honor their context and the people who inhabit them."
@@ -139,6 +163,7 @@ const values = [
     </div>
   </section>
 </BaseLayout>
+)}
 
 <style>
   /* Story */
