@@ -1,112 +1,152 @@
 ---
-export const prerender = true;
+export const prerender = false;
 
 import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import StoryblokComponent from '@storyblok/astro/StoryblokComponent.astro';
+import { getLiveStory, useStoryblokApi } from '@storyblok/astro';
 import { getCollection, render } from 'astro:content';
 
-export async function getStaticPaths() {
-  const projects = await getCollection('projects');
-  return projects.map(project => ({
-    params: { slug: project.data.slug },
-    props: { project },
-  }));
+const { slug } = Astro.params;
+
+// 1. Check for Storyblok visual editor live preview
+const liveStory = await getLiveStory(Astro);
+if (liveStory) {
+  // Render via Storyblok component (visual editor mode)
+  const content = liveStory.content;
+  // We'll render below based on `storyblokStory` being set
+  var storyblokStory = liveStory;
 }
 
-const { project } = Astro.props;
-const { Content } = await render(project);
-const { title, category, location, year, sqft, description, heroImage, galleryImages } = project.data;
+// 2. Try Storyblok API
+if (!storyblokStory) {
+  try {
+    const storyblokApi = useStoryblokApi();
+    const { data } = await storyblokApi.get(`cdn/stories/projects/${slug}`, {
+      version: 'draft',
+    });
+    var storyblokStory = data.story;
+  } catch {
+    // No Storyblok story, fall through to local
+  }
+}
 
-const stats = [
-  { label: 'Location', value: location },
-  { label: 'Year', value: year.toString() },
-  { label: 'Size', value: `${sqft} sq ft` },
-  { label: 'Type', value: category },
-];
+// 3. Fall back to local content collection
+let localProject = null;
+let LocalContent: any = null;
+if (!storyblokStory) {
+  const projects = await getCollection('projects');
+  localProject = projects.find(p => p.data.slug === slug);
+  if (!localProject) {
+    return Astro.redirect('/404');
+  }
+  const rendered = await render(localProject);
+  LocalContent = rendered.Content;
+}
+
+// Extract data for the template
+const isStoryblok = !!storyblokStory;
+const title = isStoryblok ? (storyblokStory.content.title || storyblokStory.name) : localProject!.data.title;
+const category = isStoryblok ? storyblokStory.content.category : localProject!.data.category;
+const description = isStoryblok ? storyblokStory.content.description : localProject!.data.description;
 ---
 
-<BaseLayout
-  title={`${title} — Greenline Architects`}
-  description={description}
->
-  <!-- Hero -->
-  <section class="project-hero">
-    <div class="project-hero__image-wrap">
-      <Image
-        src={heroImage}
-        alt={title}
-        class="project-hero__image"
-        loading="eager"
-        decoding="async"
-        fetchpriority="high"
-        widths={[640, 1024, 1600]}
-        sizes="100vw"
-        quality={80}
-      />
-      <div class="project-hero__overlay"></div>
-    </div>
-    <div class="project-hero__content container">
-      <p class="label project-hero__category">{category}</p>
-      <h1 class="project-hero__title">{title}</h1>
-    </div>
-  </section>
-
-  <!-- Stats -->
-  <section class="project-stats">
-    <div class="container">
-      <div class="project-stats__grid">
-        {stats.map(s => (
-          <div class="project-stats__item">
-            <span class="project-stats__label label">{s.label}</span>
-            <span class="project-stats__value">{s.value}</span>
-          </div>
-        ))}
+{isStoryblok ? (
+  <BaseLayout
+    title={`${title} — Greenline Architects`}
+    description={description || ''}
+  >
+    <StoryblokComponent blok={storyblokStory.content} />
+  </BaseLayout>
+) : (
+  <BaseLayout
+    title={`${localProject!.data.title} — Greenline Architects`}
+    description={localProject!.data.description}
+  >
+    <!-- Hero -->
+    <section class="project-hero">
+      <div class="project-hero__image-wrap">
+        <Image
+          src={localProject!.data.heroImage}
+          alt={localProject!.data.title}
+          class="project-hero__image"
+          loading="eager"
+          decoding="async"
+          fetchpriority="high"
+          widths={[640, 1024, 1600]}
+          sizes="100vw"
+          quality={80}
+        />
+        <div class="project-hero__overlay"></div>
       </div>
-    </div>
-  </section>
-
-  <!-- Description + Content -->
-  <section class="section project-content">
-    <div class="container container--narrow">
-      <div class="project-content__intro reveal">
-        <p class="project-content__lead">{description}</p>
+      <div class="project-hero__content container">
+        <p class="label project-hero__category">{localProject!.data.category}</p>
+        <h1 class="project-hero__title">{localProject!.data.title}</h1>
       </div>
-      <hr class="divider" />
-      <div class="project-content__body reveal">
-        <Content />
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Gallery -->
-  <section class="section project-gallery">
-    <div class="container">
-      <h2 class="project-gallery__heading reveal">Project Gallery</h2>
-      <div class="project-gallery__grid">
-        {galleryImages.map((img, i) => (
-          <div class={`project-gallery__item reveal reveal-delay-${(i % 4) + 1}`}>
-            <Image
-              src={img}
-              alt={`${title} — gallery image ${i + 1}`}
-              loading="lazy"
-              decoding="async"
-              widths={[480, 800]}
-              sizes="(min-width: 640px) 50vw, 100vw"
-              quality={75}
-            />
-          </div>
-        ))}
+    <!-- Stats -->
+    <section class="project-stats">
+      <div class="container">
+        <div class="project-stats__grid">
+          {[
+            { label: 'Location', value: localProject!.data.location },
+            { label: 'Year', value: localProject!.data.year.toString() },
+            { label: 'Size', value: `${localProject!.data.sqft} sq ft` },
+            { label: 'Type', value: localProject!.data.category },
+          ].map(s => (
+            <div class="project-stats__item">
+              <span class="project-stats__label label">{s.label}</span>
+              <span class="project-stats__value">{s.value}</span>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Back -->
-  <section class="project-back">
-    <div class="container">
-      <a href="/projects" class="btn btn--outline">&larr; All Projects</a>
-    </div>
-  </section>
-</BaseLayout>
+    <!-- Description + Content -->
+    <section class="section project-content">
+      <div class="container container--narrow">
+        <div class="project-content__intro reveal">
+          <p class="project-content__lead">{localProject!.data.description}</p>
+        </div>
+        <hr class="divider" />
+        <div class="project-content__body reveal">
+          <LocalContent />
+        </div>
+      </div>
+    </section>
+
+    <!-- Gallery -->
+    <section class="section project-gallery">
+      <div class="container">
+        <h2 class="project-gallery__heading reveal">Project Gallery</h2>
+        <div class="project-gallery__grid">
+          {localProject!.data.galleryImages.map((img: any, i: number) => (
+            <div class={`project-gallery__item reveal reveal-delay-${(i % 4) + 1}`}>
+              <Image
+                src={img}
+                alt={`${localProject!.data.title} — gallery image ${i + 1}`}
+                loading="lazy"
+                decoding="async"
+                widths={[480, 800]}
+                sizes="(min-width: 640px) 50vw, 100vw"
+                quality={75}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Back -->
+    <section class="project-back">
+      <div class="container">
+        <a href="/projects" class="btn btn--outline">&larr; All Projects</a>
+      </div>
+    </section>
+  </BaseLayout>
+)}
 
 <style>
   /* Hero */
