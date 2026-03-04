@@ -5,7 +5,12 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import StoryblokComponent from '@storyblok/astro/StoryblokComponent.astro';
 import { useStoryblokApi, getLiveStory } from '@storyblok/astro';
 
-const slug = Astro.params.slug || 'home';
+const slug = Astro.params.slug;
+
+// Redirect /home to the static homepage
+if (!slug || slug === 'home') {
+  return Astro.redirect('/');
+}
 
 // In the visual editor, getLiveStory returns story data from the POST body
 // (injected by the @storyblok/astro middleware). Outside the editor, it returns null.
