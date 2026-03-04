@@ -30,7 +30,7 @@ export default defineConfig({
         'team_member': 'storyblok/TeamMemberBlok',
       },
       apiOptions: {
-        region: 'us',
+        region: 'eu',
       },
       livePreview: true,
     }),
