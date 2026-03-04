@@ -16,7 +16,7 @@ export default defineConfig({
   integrations: [
     sitemap(),
     storyblok({
-      accessToken: process.env.STORYBLOK_TOKEN || '',
+      accessToken: (process.env.STORYBLOK_TOKEN || '').trim(),
       components: {
         'project': 'storyblok/Project',
         'page': 'storyblok/Page',
