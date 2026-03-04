@@ -1,0 +1,239 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map(project => ({
+    params: { slug: project.data.slug },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+const { title, category, location, year, sqft, description, heroImage, galleryImages } = project.data;
+
+const stats = [
+  { label: 'Location', value: location },
+  { label: 'Year', value: year.toString() },
+  { label: 'Size', value: `${sqft} sq ft` },
+  { label: 'Type', value: category },
+];
+---
+
+<BaseLayout
+  title={`${title} — Greenline Architects`}
+  description={description}
+>
+  <!-- Hero -->
+  <section class="project-hero">
+    <div class="project-hero__image-wrap">
+      <Image
+        src={heroImage}
+        alt={title}
+        class="project-hero__image"
+        loading="eager"
+        decoding="async"
+        fetchpriority="high"
+        widths={[640, 1024, 1600]}
+        sizes="100vw"
+        quality={80}
+      />
+      <div class="project-hero__overlay"></div>
+    </div>
+    <div class="project-hero__content container">
+      <p class="label project-hero__category">{category}</p>
+      <h1 class="project-hero__title">{title}</h1>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="project-stats">
+    <div class="container">
+      <div class="project-stats__grid">
+        {stats.map(s => (
+          <div class="project-stats__item">
+            <span class="project-stats__label label">{s.label}</span>
+            <span class="project-stats__value">{s.value}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Description + Content -->
+  <section class="section project-content">
+    <div class="container container--narrow">
+      <div class="project-content__intro reveal">
+        <p class="project-content__lead">{description}</p>
+      </div>
+      <hr class="divider" />
+      <div class="project-content__body reveal">
+        <Content />
+      </div>
+    </div>
+  </section>
+
+  <!-- Gallery -->
+  <section class="section project-gallery">
+    <div class="container">
+      <h2 class="project-gallery__heading reveal">Project Gallery</h2>
+      <div class="project-gallery__grid">
+        {galleryImages.map((img, i) => (
+          <div class={`project-gallery__item reveal reveal-delay-${(i % 4) + 1}`}>
+            <Image
+              src={img}
+              alt={`${title} — gallery image ${i + 1}`}
+              loading="lazy"
+              decoding="async"
+              widths={[480, 800]}
+              sizes="(min-width: 640px) 50vw, 100vw"
+              quality={75}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Back -->
+  <section class="project-back">
+    <div class="container">
+      <a href="/projects" class="btn btn--outline">&larr; All Projects</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Hero */
+  .project-hero {
+    position: relative;
+    min-height: 70vh;
+    min-height: 70dvh;
+    display: flex;
+    align-items: flex-end;
+    padding: calc(var(--nav-height) + var(--space-8)) 0 var(--space-9);
+    color: var(--color-light);
+  }
+
+  .project-hero__image-wrap {
+    position: absolute;
+    inset: 0;
+  }
+
+  .project-hero__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .project-hero__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(26,26,26,0.7) 0%, rgba(26,26,26,0.2) 60%, transparent 100%);
+  }
+
+  .project-hero__content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .project-hero__category {
+    color: rgba(245, 242, 237, 0.7);
+    margin-bottom: var(--space-4);
+  }
+
+  .project-hero__title {
+    max-width: 16ch;
+  }
+
+  /* Stats */
+  .project-stats {
+    padding: var(--space-8) 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .project-stats__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 640px) {
+    .project-stats__grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .project-stats__label {
+    display: block;
+    margin-bottom: var(--space-2);
+  }
+
+  .project-stats__value {
+    font-family: var(--font-heading);
+    font-size: var(--text-xl);
+  }
+
+  /* Content */
+  .project-content__lead {
+    font-size: var(--text-xl);
+    line-height: 1.6;
+    color: var(--color-dark);
+  }
+
+  .project-content__body {
+    font-size: var(--text-base);
+    line-height: 1.8;
+    color: var(--color-mid);
+  }
+
+  .project-content__body :global(h2) {
+    font-size: var(--text-2xl);
+    color: var(--color-dark);
+    margin-top: var(--space-9);
+    margin-bottom: var(--space-5);
+  }
+
+  .project-content__body :global(p) {
+    margin-bottom: var(--space-5);
+    max-width: none;
+  }
+
+  /* Gallery */
+  .project-gallery {
+    background: var(--color-dark-10);
+    padding-bottom: var(--space-section);
+  }
+
+  .project-gallery__heading {
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-8);
+  }
+
+  .project-gallery__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 640px) {
+    .project-gallery__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .project-gallery__item :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    aspect-ratio: 4 / 3;
+  }
+
+  /* Back */
+  .project-back {
+    padding-block: var(--space-9);
+  }
+</style>

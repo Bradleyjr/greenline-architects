@@ -1,0 +1,34 @@
+---
+export const prerender = false;
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import StoryblokComponent from '@storyblok/astro/StoryblokComponent.astro';
+import { useStoryblokApi, getLiveStory } from '@storyblok/astro';
+
+const slug = Astro.params.slug || 'home';
+
+// In the visual editor, getLiveStory returns story data from the POST body
+// (injected by the @storyblok/astro middleware). Outside the editor, it returns null.
+let story = await getLiveStory(Astro);
+
+if (!story) {
+  const storyblokApi = useStoryblokApi();
+  try {
+    const { data } = await storyblokApi.get(`cdn/stories/${slug}`, {
+      version: 'draft',
+    });
+    story = data.story;
+  } catch {
+    return Astro.redirect('/404');
+  }
+}
+
+const { content } = story;
+---
+
+<BaseLayout
+  title={`${story.name} — Greenline Architects`}
+  description={content.description || ''}
+>
+  <StoryblokComponent blok={content} />
+</BaseLayout>

@@ -1,0 +1,134 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import ContactForm from '../components/ContactForm.astro';
+import contactHero from '../assets/heroes/contact-hero.jpg';
+---
+
+<BaseLayout
+  title="Contact — Greenline Architects"
+  description="Get in touch with Greenline Architects. Visit our Atlanta office, call us, or send a message about your next project."
+>
+  <Hero
+    title="Let's start a conversation"
+    subtitle="Contact"
+    image={contactHero}
+    imageAlt="Modern office interior with large windows and natural light"
+    lightText={true}
+  />
+
+  <section class="section contact-page">
+    <div class="container">
+      <div class="contact-page__grid">
+        <!-- Form -->
+        <div class="contact-page__form reveal">
+          <h2>Send us a message</h2>
+          <p class="contact-page__form-intro">Tell us about your project, your timeline, and what matters most to you. We respond to every inquiry within two business days.</p>
+          <ContactForm />
+        </div>
+
+        <!-- Info -->
+        <aside class="contact-page__info reveal reveal-delay-2">
+          <div class="contact-page__block">
+            <h3 class="label">Visit Our Office</h3>
+            <address class="contact-page__address">
+              245 Peachtree Center Ave NE<br />
+              Suite 800<br />
+              Atlanta, GA 30303
+            </address>
+          </div>
+
+          <div class="contact-page__block">
+            <h3 class="label">Reach Out Directly</h3>
+            <p><a href="tel:+14045550140">(404) 555-0140</a></p>
+            <p><a href="mailto:hello@greenlinearchitects.com">hello@greenlinearchitects.com</a></p>
+          </div>
+
+          <div class="contact-page__block">
+            <h3 class="label">Office Hours</h3>
+            <p>Monday — Friday: 8:00 AM – 6:00 PM</p>
+            <p>Saturday — Sunday: Closed</p>
+          </div>
+
+          <!-- Map Placeholder -->
+          <div class="contact-page__map" aria-label="Office location map">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3316.436!2d-84.388!3d33.759!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzPCsDQ1JzMyLjQiTiA4NMKwMjMnMTYuOCJX!5e0!3m2!1sen!2sus!4v1"
+              width="100%"
+              height="280"
+              style="border:0;"
+              allowfullscreen=""
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              title="Greenline Architects office location in Atlanta, GA"
+            ></iframe>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .contact-page__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-11);
+  }
+
+  @media (min-width: 1024px) {
+    .contact-page__grid {
+      grid-template-columns: 1.4fr 1fr;
+      gap: var(--space-12);
+    }
+  }
+
+  .contact-page__form h2 {
+    font-size: var(--text-3xl);
+    margin-bottom: var(--space-4);
+  }
+
+  .contact-page__form-intro {
+    color: var(--color-mid);
+    margin-bottom: var(--space-8);
+    max-width: 50ch;
+  }
+
+  .contact-page__info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-7);
+  }
+
+  .contact-page__block .label {
+    margin-bottom: var(--space-3);
+    display: block;
+  }
+
+  .contact-page__address {
+    font-style: normal;
+    line-height: 1.8;
+  }
+
+  .contact-page__block p {
+    line-height: 1.8;
+  }
+
+  .contact-page__block a {
+    color: var(--color-dark);
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .contact-page__block a:hover {
+    color: var(--color-accent);
+  }
+
+  .contact-page__map {
+    overflow: hidden;
+    background: var(--color-dark-10);
+  }
+
+  .contact-page__map iframe {
+    display: block;
+  }
+</style>

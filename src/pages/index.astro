@@ -1,0 +1,322 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import TestimonialCard from '../components/TestimonialCard.astro';
+import { getCollection } from 'astro:content';
+import homeHero from '../assets/heroes/home-hero.jpg';
+
+const allProjects = await getCollection('projects');
+const featuredProjects = allProjects.filter(p => p.data.featured);
+
+const services = [
+  { icon: '01', title: 'Architecture', desc: 'Full-service architectural design from concept through construction administration.' },
+  { icon: '02', title: 'Interior Design', desc: 'Interior environments that extend and refine the architectural vision.' },
+  { icon: '03', title: 'Urban Planning', desc: 'Master plans and urban strategies that shape communities over decades.' },
+];
+
+const testimonials = [
+  {
+    quote: "Greenline transformed our vision into something far more considered and beautiful than we imagined. They listened with extraordinary care and then pushed the design in directions we never would have found on our own.",
+    author: "Catherine & James Wright",
+    role: "Riverfront Residence Clients"
+  },
+  {
+    quote: "Working with this team redefined what we thought a civic building could be. They brought genuine community voice into every design decision, and the result is a building that belongs to everyone.",
+    author: "Marcus Townsend",
+    role: "Director, City of Atlanta Department of Cultural Affairs"
+  },
+];
+---
+
+<BaseLayout
+  title="Greenline Architects — Atlanta Architecture Firm"
+  description="Award-winning architecture firm in Atlanta, GA. We design residential, commercial, and civic spaces that honor their context and the people who inhabit them."
+>
+  <!-- Hero -->
+  <Hero
+    title="Architecture rooted in place"
+    subtitle="Greenline Architects — Atlanta, GA"
+    image={homeHero}
+    imageAlt="Modern architectural facade with geometric concrete forms and natural light"
+    fullHeight={true}
+    lightText={true}
+  >
+    <p class="hero__desc">We design buildings that belong where they stand — shaped by landscape, light, and the lives they shelter.</p>
+    <div class="hero__actions">
+      <a href="/projects" class="btn btn--light">View Our Work</a>
+      <a href="/contact" class="btn btn--outline btn--outline-light">Start a Conversation</a>
+    </div>
+  </Hero>
+
+  <!-- Services Overview -->
+  <section class="section home-services">
+    <div class="container">
+      <div class="home-services__header reveal">
+        <p class="label">What We Do</p>
+        <h2>Design with<br />intention</h2>
+        <p class="home-services__intro">Every project begins with a deep understanding of site, program, and the people who will use the space. We work across scales — from private residences to civic landmarks — with the same commitment to craft and context.</p>
+      </div>
+      <div class="home-services__grid">
+        {services.map((s, i) => (
+          <div class={`home-services__item reveal reveal-delay-${i + 1}`}>
+            <span class="home-services__number">{s.icon}</span>
+            <h3 class="home-services__title">{s.title}</h3>
+            <p class="home-services__desc">{s.desc}</p>
+          </div>
+        ))}
+      </div>
+      <div class="home-services__cta reveal">
+        <a href="/services" class="btn btn--outline">All Services</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Projects -->
+  <section class="section home-projects">
+    <div class="container">
+      <div class="home-projects__header reveal">
+        <p class="label">Selected Work</p>
+        <h2>Projects that<br />define us</h2>
+      </div>
+      <div class="home-projects__grid">
+        {featuredProjects.map((project, i) => (
+          <div class={`reveal reveal-delay-${i + 1}`}>
+            <ProjectCard
+              title={project.data.title}
+              slug={project.data.slug}
+              category={project.data.category}
+              location={project.data.location}
+              year={project.data.year}
+              heroImage={project.data.heroImage}
+            />
+          </div>
+        ))}
+      </div>
+      <div class="home-projects__cta reveal">
+        <a href="/projects" class="btn btn--outline">View All Projects</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="section home-testimonials">
+    <div class="container">
+      <div class="home-testimonials__header reveal">
+        <p class="label">Client Voices</p>
+      </div>
+      <div class="home-testimonials__grid">
+        {testimonials.map((t, i) => (
+          <div class={`reveal reveal-delay-${i + 1}`}>
+            <TestimonialCard quote={t.quote} author={t.author} role={t.role} />
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="home-cta">
+    <div class="home-cta__inner container">
+      <div class="home-cta__content reveal">
+        <h2>Let's build something<br />that lasts</h2>
+        <p>Every great project begins with a conversation. Tell us about your site, your vision, and the kind of place you want to create.</p>
+        <a href="/contact" class="btn btn--accent">Get in Touch</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Hero extras */
+  .hero__desc {
+    font-size: var(--text-lg);
+    color: rgba(245, 242, 237, 0.8);
+    max-width: 48ch;
+    margin-top: var(--space-5);
+    margin-bottom: var(--space-7);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+
+  .btn--outline-light {
+    color: var(--color-light);
+    border-color: rgba(245, 242, 237, 0.4);
+  }
+
+  .btn--outline-light:hover {
+    background: var(--color-light);
+    color: var(--color-dark);
+    border-color: var(--color-light);
+  }
+
+  /* Services */
+  .home-services__header {
+    margin-bottom: var(--space-9);
+  }
+
+  .home-services__header h2 {
+    margin-top: var(--space-4);
+    margin-bottom: var(--space-5);
+  }
+
+  .home-services__intro {
+    font-size: var(--text-lg);
+    color: var(--color-mid);
+    max-width: 55ch;
+  }
+
+  .home-services__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    margin-bottom: var(--space-9);
+  }
+
+  @media (min-width: 640px) {
+    .home-services__grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-8);
+    }
+  }
+
+  .home-services__item {
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .home-services__number {
+    font-size: var(--text-xs);
+    color: var(--color-accent);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    display: block;
+    margin-bottom: var(--space-4);
+  }
+
+  .home-services__title {
+    font-size: var(--text-xl);
+    margin-bottom: var(--space-3);
+  }
+
+  .home-services__desc {
+    font-size: var(--text-sm);
+    color: var(--color-mid);
+    line-height: 1.7;
+  }
+
+  /* Featured Projects */
+  .home-projects {
+    background: var(--color-dark);
+    color: var(--color-light);
+  }
+
+  .home-projects__header {
+    margin-bottom: var(--space-9);
+  }
+
+  .home-projects__header .label {
+    color: var(--color-accent);
+  }
+
+  .home-projects__header h2 {
+    margin-top: var(--space-4);
+  }
+
+  .home-projects__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+    margin-bottom: var(--space-9);
+  }
+
+  @media (min-width: 640px) {
+    .home-projects__grid {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-7);
+    }
+
+    .home-projects__grid > :first-child {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .home-projects__grid {
+      grid-template-columns: 1.3fr 1fr;
+    }
+
+    .home-projects__grid > :first-child {
+      grid-column: auto;
+      grid-row: 1 / 3;
+    }
+  }
+
+  .home-projects :global(.project-card__title),
+  .home-projects :global(.project-card__meta) {
+    color: rgba(245, 242, 237, 0.7);
+  }
+
+  .home-projects :global(.project-card__title) {
+    color: var(--color-light);
+  }
+
+  .home-projects .btn--outline {
+    color: var(--color-light);
+    border-color: rgba(245, 242, 237, 0.3);
+  }
+
+  .home-projects .btn--outline:hover {
+    background: var(--color-light);
+    color: var(--color-dark);
+  }
+
+  /* Testimonials */
+  .home-testimonials__header {
+    margin-bottom: var(--space-8);
+  }
+
+  .home-testimonials__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-9);
+  }
+
+  @media (min-width: 1024px) {
+    .home-testimonials__grid {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-8);
+    }
+  }
+
+  /* CTA */
+  .home-cta {
+    background: var(--color-accent);
+    color: var(--color-light);
+    padding-block: var(--space-section);
+  }
+
+  .home-cta h2 {
+    margin-bottom: var(--space-5);
+  }
+
+  .home-cta p {
+    font-size: var(--text-lg);
+    color: rgba(245, 242, 237, 0.85);
+    margin-bottom: var(--space-7);
+    max-width: 50ch;
+  }
+
+  .home-cta .btn--accent {
+    background: var(--color-dark);
+  }
+
+  .home-cta .btn--accent:hover {
+    background: var(--color-light);
+    color: var(--color-dark);
+  }
+</style>

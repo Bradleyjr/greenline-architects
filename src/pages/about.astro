@@ -1,0 +1,252 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import TeamMember from '../components/TeamMember.astro';
+import aboutHero from '../assets/heroes/about-hero.jpg';
+import aboutStudio from '../assets/heroes/about-studio.jpg';
+import elenaImg from '../assets/team/elena-vasquez.jpg';
+import davidImg from '../assets/team/david-chen.jpg';
+import amaraImg from '../assets/team/amara-okafor.jpg';
+import jamesImg from '../assets/team/james-whitfield.jpg';
+
+const team = [
+  {
+    name: 'Elena Vasquez',
+    role: 'Founding Principal',
+    image: elenaImg,
+    bio: 'AIA Fellow with 25 years of practice. Former design director at Mack Scogin Merrill Elam. Leads the studio\'s design vision and client relationships.',
+  },
+  {
+    name: 'David Chen',
+    role: 'Principal, Design',
+    image: davidImg,
+    bio: 'Harvard GSD graduate. Specializes in adaptive reuse and civic architecture. Leads the firm\'s sustainability practice and material research.',
+  },
+  {
+    name: 'Amara Okafor',
+    role: 'Principal, Operations',
+    image: amaraImg,
+    bio: 'Licensed architect and project management specialist. Ensures every project delivers on budget and timeline without compromising design intent.',
+  },
+  {
+    name: 'James Whitfield',
+    role: 'Senior Associate',
+    image: jamesImg,
+    bio: 'Leads the firm\'s residential practice. Passionate about craft-driven construction and close collaboration with builders and artisans.',
+  },
+];
+
+const values = [
+  {
+    title: 'Context First',
+    desc: 'Every project begins with the site — its history, ecology, light, and relationship to the community around it. We design from the outside in.',
+  },
+  {
+    title: 'Material Honesty',
+    desc: 'We believe buildings should be made of real things. Concrete, timber, stone, glass. Materials that age with grace and tell the truth about how a building is made.',
+  },
+  {
+    title: 'Collaborative Process',
+    desc: 'Our best work comes from genuine partnership with clients, consultants, and builders. We bring strong ideas to the table and remain open to better ones.',
+  },
+  {
+    title: 'Long-Term Thinking',
+    desc: 'We design for the next hundred years, not the next hundred likes. Durability, adaptability, and timelessness guide every decision we make.',
+  },
+];
+---
+
+<BaseLayout
+  title="About — Greenline Architects"
+  description="Learn about Greenline Architects — our story, our team, and our approach to designing buildings that honor their context and the people who inhabit them."
+>
+  <Hero
+    title="Building with purpose since 2008"
+    subtitle="About Our Firm"
+    image={aboutHero}
+    imageAlt="Architectural studio with models and drawings on work tables"
+    lightText={true}
+  />
+
+  <!-- Story -->
+  <section class="section about-story">
+    <div class="container">
+      <div class="about-story__grid">
+        <div class="about-story__content reveal">
+          <p class="label">Our Story</p>
+          <h2>A practice built on conviction</h2>
+          <hr class="divider" />
+          <p>Greenline Architects was founded in 2008 by Elena Vasquez with a simple premise: that great architecture emerges from a deep respect for place. What began as a two-person studio in a converted warehouse on Atlanta's Westside has grown into a 28-person practice recognized nationally for design excellence.</p>
+          <p>We chose the name "Greenline" not as a reference to sustainability — though we take that responsibility seriously — but as a nod to the boundary where the built environment meets the natural world. That edge, that conversation between architecture and landscape, is where our most meaningful work happens.</p>
+          <p>Over sixteen years, we've completed more than 120 projects across the Southeast. Our portfolio spans private residences, mixed-use developments, civic buildings, and cultural institutions. What unites these projects is not a signature style but a shared commitment to listening — to clients, to communities, to the land itself.</p>
+        </div>
+        <div class="about-story__image reveal reveal-delay-2">
+          <Image
+            src={aboutStudio}
+            alt="Interior of Greenline Architects studio with natural light"
+            loading="lazy"
+            decoding="async"
+            widths={[400, 640, 800]}
+            sizes="(min-width: 1024px) 45vw, 100vw"
+            quality={80}
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Values -->
+  <section class="section about-values">
+    <div class="container">
+      <div class="about-values__header reveal">
+        <p class="label">Our Approach</p>
+        <h2>What guides<br />our work</h2>
+      </div>
+      <div class="about-values__grid">
+        {values.map((v, i) => (
+          <div class={`about-values__item reveal reveal-delay-${i + 1}`}>
+            <h3>{v.title}</h3>
+            <p>{v.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Team -->
+  <section class="section about-team">
+    <div class="container">
+      <div class="about-team__header reveal">
+        <p class="label">Our People</p>
+        <h2>Meet the studio</h2>
+        <p class="about-team__intro">Our team of 28 architects, designers, and project managers brings diverse perspectives and shared ambition to every project.</p>
+      </div>
+      <div class="about-team__grid">
+        {team.map((member, i) => (
+          <div class={`reveal reveal-delay-${i + 1}`}>
+            <TeamMember
+              name={member.name}
+              role={member.role}
+              image={member.image}
+              bio={member.bio}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Story */
+  .about-story__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-9);
+    align-items: start;
+  }
+
+  @media (min-width: 1024px) {
+    .about-story__grid {
+      grid-template-columns: 1.2fr 1fr;
+    }
+  }
+
+  .about-story__content h2 {
+    margin-top: var(--space-4);
+  }
+
+  .about-story__content p {
+    color: var(--color-mid);
+    line-height: 1.8;
+    margin-bottom: var(--space-5);
+  }
+
+  .about-story__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    aspect-ratio: 4 / 5;
+  }
+
+  /* Values */
+  .about-values {
+    background: var(--color-dark);
+    color: var(--color-light);
+  }
+
+  .about-values__header {
+    margin-bottom: var(--space-9);
+  }
+
+  .about-values__header .label {
+    color: var(--color-accent);
+  }
+
+  .about-values__header h2 {
+    margin-top: var(--space-4);
+  }
+
+  .about-values__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 640px) {
+    .about-values__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .about-values__item {
+    padding: var(--space-7);
+    border: 1px solid rgba(245, 242, 237, 0.1);
+  }
+
+  .about-values__item h3 {
+    font-size: var(--text-xl);
+    margin-bottom: var(--space-4);
+  }
+
+  .about-values__item p {
+    font-size: var(--text-sm);
+    color: rgba(245, 242, 237, 0.6);
+    line-height: 1.7;
+  }
+
+  /* Team */
+  .about-team__header {
+    margin-bottom: var(--space-9);
+  }
+
+  .about-team__header h2 {
+    margin-top: var(--space-4);
+    margin-bottom: var(--space-4);
+  }
+
+  .about-team__intro {
+    font-size: var(--text-lg);
+    color: var(--color-mid);
+    max-width: 50ch;
+  }
+
+  .about-team__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+  }
+
+  @media (min-width: 640px) {
+    .about-team__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .about-team__grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+</style>

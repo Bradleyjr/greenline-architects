@@ -1,0 +1,112 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import ServiceCard from '../components/ServiceCard.astro';
+import servicesHero from '../assets/heroes/about-hero.jpg';
+
+const services = [
+  {
+    number: '01',
+    title: 'Architectural Design',
+    description: 'Full-service architecture from schematic design through construction administration. We guide projects from the first sketch to the final walkthrough, managing every detail of form, material, and construction logic. Our design process is iterative and transparent — clients are partners at every stage.',
+  },
+  {
+    number: '02',
+    title: 'Interior Architecture',
+    description: 'Interior environments that are integral to the architectural concept, not afterthoughts. We design custom millwork, select materials and finishes, coordinate lighting design, and specify furniture — creating spaces where every surface and object contributes to a coherent whole.',
+  },
+  {
+    number: '03',
+    title: 'Master Planning',
+    description: 'Large-scale site and campus planning for institutions, developers, and municipalities. We analyze land use, circulation, ecology, and community needs to create frameworks that guide development over decades. Our master plans balance density with open space, infrastructure with beauty.',
+  },
+  {
+    number: '04',
+    title: 'Adaptive Reuse',
+    description: 'Giving existing buildings new life through thoughtful renovation and reprogramming. We specialize in reading the latent potential of undervalued structures — warehouses, civic buildings, industrial facilities — and transforming them into places that honor their history while serving contemporary needs.',
+  },
+  {
+    number: '05',
+    title: 'Feasibility Studies',
+    description: 'Early-stage analysis to help clients understand what is possible on a given site or within a given budget. We assess zoning, site constraints, programmatic requirements, and construction costs to provide a clear picture before design begins. This saves time, money, and expectation misalignment.',
+  },
+  {
+    number: '06',
+    title: 'Sustainable Design',
+    description: 'Environmental responsibility is embedded in our process, not treated as an add-on. We pursue LEED, Passive House, and Living Building Challenge certifications where appropriate, and we always prioritize passive strategies — orientation, daylighting, natural ventilation — before reaching for mechanical solutions.',
+  },
+];
+---
+
+<BaseLayout
+  title="Services — Greenline Architects"
+  description="Explore the full range of architectural services offered by Greenline Architects, including design, interior architecture, master planning, and sustainable design."
+>
+  <Hero
+    title="What we do and how we do it"
+    subtitle="Services"
+    image={servicesHero}
+    imageAlt="Architectural blueprints and models on a studio desk"
+    lightText={true}
+  />
+
+  <section class="section services-page">
+    <div class="container">
+      <div class="services-page__intro reveal">
+        <h2 class="services-page__heading">Our Capabilities</h2>
+        <p class="text-lg">Our services span the full lifecycle of a building — from the earliest site analysis through years of post-occupancy support. Every engagement is tailored to the project's unique requirements. Here's what we bring to the table.</p>
+      </div>
+
+      <div class="services-page__list">
+        {services.map((s, i) => (
+          <div class={`reveal reveal-delay-${(i % 3) + 1}`}>
+            <ServiceCard number={s.number} title={s.title} description={s.description} />
+          </div>
+        ))}
+      </div>
+
+      <div class="services-page__cta reveal">
+        <div class="services-page__cta-content">
+          <h2>Have a project in mind?</h2>
+          <p>We'd love to hear about it. Every great building starts with a conversation about ambition, constraints, and possibility.</p>
+          <a href="/contact" class="btn btn--primary">Get in Touch</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .services-page__intro {
+    max-width: var(--max-width-narrow);
+    margin-bottom: var(--space-9);
+    color: var(--color-mid);
+  }
+
+  .services-page__heading {
+    font-size: var(--text-3xl);
+    color: var(--color-dark);
+    margin-bottom: var(--space-5);
+  }
+
+  .services-page__list {
+    margin-bottom: var(--space-11);
+  }
+
+  .services-page__cta {
+    padding: var(--space-9);
+    background: var(--color-dark-10);
+  }
+
+  .services-page__cta h3 {
+    font-size: var(--text-3xl);
+    margin-bottom: var(--space-4);
+  }
+
+  .services-page__cta p {
+    font-size: var(--text-lg);
+    color: var(--color-mid);
+    margin-bottom: var(--space-7);
+    max-width: 50ch;
+  }
+</style>

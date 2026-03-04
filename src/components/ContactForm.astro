@@ -1,0 +1,147 @@
+---
+---
+
+<form
+  class="contact-form"
+  action="https://formspree.io/f/YOUR_FORM_ID"
+  method="POST"
+>
+  <div class="contact-form__grid">
+    <div class="contact-form__field">
+      <label for="name" class="contact-form__label">Name</label>
+      <input
+        type="text"
+        id="name"
+        name="name"
+        required
+        autocomplete="name"
+        class="contact-form__input"
+        placeholder="Your full name"
+      />
+    </div>
+
+    <div class="contact-form__field">
+      <label for="email" class="contact-form__label">Email</label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        required
+        autocomplete="email"
+        class="contact-form__input"
+        placeholder="your@email.com"
+      />
+    </div>
+
+    <div class="contact-form__field">
+      <label for="phone" class="contact-form__label">Phone <span class="text-mid">(optional)</span></label>
+      <input
+        type="tel"
+        id="phone"
+        name="phone"
+        autocomplete="tel"
+        class="contact-form__input"
+        placeholder="(404) 555-0000"
+      />
+    </div>
+
+    <div class="contact-form__field">
+      <label for="project-type" class="contact-form__label">Project Type</label>
+      <select id="project-type" name="project-type" required class="contact-form__input contact-form__select">
+        <option value="" disabled selected>Select a type</option>
+        <option value="residential">Residential</option>
+        <option value="commercial">Commercial</option>
+        <option value="civic">Civic / Institutional</option>
+        <option value="interior">Interior Renovation</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="contact-form__field contact-form__field--full">
+    <label for="message" class="contact-form__label">Tell us about your project</label>
+    <textarea
+      id="message"
+      name="message"
+      required
+      rows="6"
+      class="contact-form__input contact-form__textarea"
+      placeholder="Share any details about your project — timeline, budget range, site location, or design inspirations."
+    ></textarea>
+  </div>
+
+  <button type="submit" class="btn btn--primary contact-form__submit">
+    Send Message
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+</form>
+
+<style>
+  .contact-form__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+    margin-bottom: var(--space-5);
+  }
+
+  @media (min-width: 640px) {
+    .contact-form__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .contact-form__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .contact-form__field--full {
+    margin-bottom: var(--space-6);
+  }
+
+  .contact-form__label {
+    font-size: var(--text-sm);
+    font-weight: 500;
+  }
+
+  .contact-form__input {
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--color-border);
+    background: transparent;
+    font-size: var(--text-base);
+    color: var(--color-dark);
+    transition: border-color var(--duration-fast) var(--ease-out);
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 0;
+  }
+
+  .contact-form__input::placeholder {
+    color: var(--color-dark-40);
+  }
+
+  .contact-form__input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+  }
+
+  .contact-form__select {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%231a1a1a' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right var(--space-4) center;
+    padding-right: var(--space-8);
+  }
+
+  .contact-form__textarea {
+    resize: vertical;
+    min-height: 150px;
+  }
+
+  .contact-form__submit {
+    width: auto;
+  }
+</style>

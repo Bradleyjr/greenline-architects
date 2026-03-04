@@ -1,0 +1,69 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  name: string;
+  role: string;
+  image: ImageMetadata;
+  bio: string;
+}
+
+const { name, role, image, bio } = Astro.props;
+---
+
+<div class="team-member">
+  <div class="team-member__image-wrap">
+    <Image
+      src={image}
+      alt={`Portrait of ${name}`}
+      class="team-member__image"
+      loading="lazy"
+      decoding="async"
+      widths={[200, 400]}
+      sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+      quality={75}
+    />
+  </div>
+  <div class="team-member__info">
+    <h3 class="team-member__name">{name}</h3>
+    <p class="team-member__role label">{role}</p>
+    <p class="team-member__bio">{bio}</p>
+  </div>
+</div>
+
+<style>
+  .team-member__image-wrap {
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: var(--color-dark-10);
+    margin-bottom: var(--space-5);
+  }
+
+  .team-member__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(20%);
+    transition: filter var(--duration-base) var(--ease-out);
+  }
+
+  .team-member:hover .team-member__image {
+    filter: grayscale(0%);
+  }
+
+  .team-member__name {
+    font-size: var(--text-xl);
+    margin-bottom: var(--space-1);
+  }
+
+  .team-member__role {
+    margin-bottom: var(--space-3);
+  }
+
+  .team-member__bio {
+    font-size: var(--text-sm);
+    color: var(--color-mid);
+    max-width: 35ch;
+  }
+</style>

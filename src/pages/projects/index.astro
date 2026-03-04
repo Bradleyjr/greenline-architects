@@ -1,0 +1,128 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Hero from '../../components/Hero.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { getCollection } from 'astro:content';
+import projectsHero from '../../assets/heroes/projects-hero.jpg';
+
+const allProjects = await getCollection('projects');
+const categories = ['All', 'Residential', 'Commercial', 'Civic'];
+---
+
+<BaseLayout
+  title="Projects — Greenline Architects"
+  description="Explore our portfolio of residential, commercial, and civic architecture projects across the Southeast."
+>
+  <Hero
+    title="Our work speaks for itself"
+    subtitle="Projects"
+    image={projectsHero}
+    imageAlt="Aerial view of modern architectural complex with geometric forms"
+    lightText={true}
+  />
+
+  <section class="section projects-page">
+    <div class="container">
+      <!-- Filter -->
+      <div class="projects-filter reveal" role="group" aria-label="Filter projects by category">
+        {categories.map(cat => (
+          <button
+            class:list={['projects-filter__btn', { 'is-active': cat === 'All' }]}
+            data-filter={cat === 'All' ? 'all' : cat}
+            type="button"
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      <!-- Grid -->
+      <h2 class="sr-only">All Projects</h2>
+      <div class="projects-grid" id="projects-grid">
+        {allProjects.map((project, i) => (
+          <div class={`projects-grid__item reveal reveal-delay-${(i % 4) + 1}`} data-category={project.data.category}>
+            <ProjectCard
+              title={project.data.title}
+              slug={project.data.slug}
+              category={project.data.category}
+              location={project.data.location}
+              year={project.data.year}
+              heroImage={project.data.heroImage}
+            />
+          </div>
+        ))}
+      </div>
+
+      <p class="projects-empty" id="projects-empty" hidden>No projects found in this category.</p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .projects-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-bottom: var(--space-9);
+  }
+
+  .projects-filter__btn {
+    padding: var(--space-2) var(--space-5);
+    background: transparent;
+    border: 1px solid var(--color-border);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-mid);
+    cursor: pointer;
+    transition: all var(--duration-fast) var(--ease-out);
+  }
+
+  .projects-filter__btn:hover {
+    color: var(--color-dark);
+    border-color: var(--color-dark);
+  }
+
+  .projects-filter__btn.is-active {
+    background: var(--color-dark);
+    color: var(--color-light);
+    border-color: var(--color-dark);
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+  }
+
+  @media (min-width: 640px) {
+    .projects-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-7);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .projects-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .projects-grid__item {
+    transition: opacity var(--duration-base) var(--ease-out),
+                transform var(--duration-base) var(--ease-out);
+  }
+
+  .projects-grid__item.is-hidden {
+    display: none;
+  }
+
+  .projects-empty {
+    text-align: center;
+    color: var(--color-mid);
+    font-size: var(--text-lg);
+    padding: var(--space-11) 0;
+  }
+</style>

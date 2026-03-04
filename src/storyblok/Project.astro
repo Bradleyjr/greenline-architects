@@ -1,0 +1,243 @@
+---
+/**
+ * Storyblok "project" component
+ *
+ * This component renders a single project story from Storyblok.
+ * It maps Storyblok fields to the same visual layout used by
+ * the local content-collection project detail pages.
+ *
+ * Expected Storyblok fields:
+ *   - title        (text)
+ *   - category     (single option: Residential | Commercial | Civic)
+ *   - location     (text)
+ *   - year         (number)
+ *   - sqft         (text)
+ *   - description  (textarea)
+ *   - hero_image   (asset)
+ *   - gallery      (multi-asset)
+ *   - body         (richtext)
+ */
+import { storyblokEditable, renderRichText } from '@storyblok/astro';
+
+const { blok } = Astro.props;
+
+const stats = [
+  { label: 'Location', value: blok.location || '' },
+  { label: 'Year', value: String(blok.year || '') },
+  { label: 'Size', value: blok.sqft ? `${blok.sqft} sq ft` : '' },
+  { label: 'Type', value: blok.category || '' },
+];
+
+const bodyHtml = blok.body ? renderRichText(blok.body) : '';
+---
+
+<article {...storyblokEditable(blok)}>
+  <!-- Hero -->
+  <section class="project-hero">
+    {blok.hero_image?.filename && (
+      <div class="project-hero__image-wrap">
+        <img
+          src={`${blok.hero_image.filename}/m/1600x900/filters:quality(80):format(webp)`}
+          alt={blok.hero_image.alt || blok.title}
+          class="project-hero__image"
+          loading="eager"
+          decoding="async"
+          fetchpriority="high"
+          width="1600"
+          height="900"
+        />
+        <div class="project-hero__overlay"></div>
+      </div>
+    )}
+    <div class="project-hero__content container">
+      <p class="label project-hero__category">{blok.category}</p>
+      <h1 class="project-hero__title">{blok.title}</h1>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="project-stats">
+    <div class="container">
+      <div class="project-stats__grid">
+        {stats.filter(s => s.value).map(s => (
+          <div class="project-stats__item">
+            <span class="project-stats__label label">{s.label}</span>
+            <span class="project-stats__value">{s.value}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Description -->
+  <section class="section project-content">
+    <div class="container container--narrow">
+      {blok.description && (
+        <div class="project-content__intro reveal">
+          <p class="project-content__lead">{blok.description}</p>
+        </div>
+      )}
+      <hr class="divider" />
+      {bodyHtml && (
+        <div class="project-content__body reveal" set:html={bodyHtml} />
+      )}
+    </div>
+  </section>
+
+  <!-- Gallery -->
+  {blok.gallery?.length > 0 && (
+    <section class="section project-gallery">
+      <div class="container">
+        <h2 class="project-gallery__heading reveal">Project Gallery</h2>
+        <div class="project-gallery__grid">
+          {blok.gallery.map((img: any, i: number) => (
+            <div class={`project-gallery__item reveal reveal-delay-${(i % 4) + 1}`}>
+              <img
+                src={`${img.filename}/m/800x600/filters:quality(75):format(webp)`}
+                alt={img.alt || `${blok.title} — gallery image ${i + 1}`}
+                loading="lazy"
+                decoding="async"
+                width="800"
+                height="600"
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Back -->
+  <section class="project-back">
+    <div class="container">
+      <a href="/projects" class="btn btn--outline">&larr; All Projects</a>
+    </div>
+  </section>
+</article>
+
+<style>
+  .project-hero {
+    position: relative;
+    min-height: 70vh;
+    min-height: 70dvh;
+    display: flex;
+    align-items: flex-end;
+    padding: calc(var(--nav-height) + var(--space-8)) 0 var(--space-9);
+    color: var(--color-light);
+  }
+
+  .project-hero__image-wrap {
+    position: absolute;
+    inset: 0;
+  }
+
+  .project-hero__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .project-hero__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(26,26,26,0.7) 0%, rgba(26,26,26,0.2) 60%, transparent 100%);
+  }
+
+  .project-hero__content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .project-hero__category {
+    color: rgba(245, 242, 237, 0.7);
+    margin-bottom: var(--space-4);
+  }
+
+  .project-hero__title {
+    max-width: 16ch;
+  }
+
+  .project-stats {
+    padding: var(--space-8) 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .project-stats__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 640px) {
+    .project-stats__grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .project-stats__label {
+    display: block;
+    margin-bottom: var(--space-2);
+  }
+
+  .project-stats__value {
+    font-family: var(--font-heading);
+    font-size: var(--text-xl);
+  }
+
+  .project-content__lead {
+    font-size: var(--text-xl);
+    line-height: 1.6;
+    color: var(--color-dark);
+  }
+
+  .project-content__body {
+    font-size: var(--text-base);
+    line-height: 1.8;
+    color: var(--color-mid);
+  }
+
+  .project-content__body :global(h2) {
+    font-size: var(--text-2xl);
+    color: var(--color-dark);
+    margin-top: var(--space-9);
+    margin-bottom: var(--space-5);
+  }
+
+  .project-content__body :global(p) {
+    margin-bottom: var(--space-5);
+    max-width: none;
+  }
+
+  .project-gallery {
+    background: var(--color-dark-10);
+    padding-bottom: var(--space-section);
+  }
+
+  .project-gallery__heading {
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-8);
+  }
+
+  .project-gallery__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 640px) {
+    .project-gallery__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .project-gallery__item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    aspect-ratio: 4 / 3;
+  }
+
+  .project-back {
+    padding-block: var(--space-9);
+  }
+</style>

@@ -1,0 +1,49 @@
+---
+interface Props {
+  quote: string;
+  author: string;
+  role: string;
+}
+
+const { quote, author, role } = Astro.props;
+---
+
+<blockquote class="testimonial">
+  <p class="testimonial__quote">&ldquo;{quote}&rdquo;</p>
+  <footer class="testimonial__footer">
+    <cite class="testimonial__author">{author}</cite>
+    <span class="testimonial__role">{role}</span>
+  </footer>
+</blockquote>
+
+<style>
+  .testimonial {
+    padding: var(--space-8);
+    border-left: 2px solid var(--color-accent);
+  }
+
+  .testimonial__quote {
+    font-family: var(--font-heading);
+    font-size: var(--text-2xl);
+    line-height: 1.4;
+    margin-bottom: var(--space-6);
+    max-width: 45ch;
+  }
+
+  .testimonial__footer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .testimonial__author {
+    font-style: normal;
+    font-weight: 500;
+    font-size: var(--text-base);
+  }
+
+  .testimonial__role {
+    font-size: var(--text-sm);
+    color: var(--color-mid);
+  }
+</style>

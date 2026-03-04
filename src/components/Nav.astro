@@ -1,0 +1,207 @@
+---
+const currentPath = Astro.url.pathname;
+
+const links = [
+  { href: '/', label: 'Home' },
+  { href: '/about', label: 'About' },
+  { href: '/projects', label: 'Projects' },
+  { href: '/services', label: 'Services' },
+  { href: '/contact', label: 'Contact' },
+];
+---
+
+<header class="nav" id="site-nav" role="banner">
+  <div class="nav__inner container">
+    <a href="/" class="nav__logo">
+      <span class="nav__logo-mark">G</span>
+      <span class="nav__logo-text">Greenline</span>
+    </a>
+
+    <nav class="nav__links" id="nav-menu" aria-label="Main navigation">
+      <ul class="nav__list" role="list">
+        {links.map(link => (
+          <li>
+            <a
+              href={link.href}
+              class:list={['nav__link', { 'is-active': currentPath === link.href || (link.href !== '/' && currentPath.startsWith(link.href)) }]}
+              aria-current={currentPath === link.href ? 'page' : undefined}
+            >
+              {link.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <button
+      class="nav__toggle"
+      id="nav-toggle"
+      aria-expanded="false"
+      aria-controls="nav-menu"
+      aria-label="Open menu"
+    >
+      <span class="nav__toggle-bar"></span>
+      <span class="nav__toggle-bar"></span>
+      <span class="nav__toggle-bar"></span>
+    </button>
+  </div>
+</header>
+
+<style>
+  .nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    height: var(--nav-height);
+    display: flex;
+    align-items: center;
+    transition: background var(--duration-base) var(--ease-out),
+                box-shadow var(--duration-base) var(--ease-out);
+  }
+
+  .nav.is-scrolled {
+    background: rgba(245, 242, 237, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 1px 0 var(--color-dark-10);
+  }
+
+  .nav__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .nav__logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-family: var(--font-heading);
+    font-size: var(--text-lg);
+    z-index: 101;
+  }
+
+  .nav__logo-mark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: var(--color-dark);
+    color: var(--color-light);
+    font-size: var(--text-base);
+  }
+
+  .nav__list {
+    display: flex;
+    gap: var(--space-7);
+  }
+
+  .nav__link {
+    font-size: var(--text-sm);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-dark-60);
+    transition: color var(--duration-fast) var(--ease-out);
+    position: relative;
+  }
+
+  .nav__link::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--color-accent);
+    transition: width var(--duration-base) var(--ease-out);
+  }
+
+  .nav__link:hover,
+  .nav__link.is-active {
+    color: var(--color-dark);
+  }
+
+  .nav__link.is-active::after,
+  .nav__link:hover::after {
+    width: 100%;
+  }
+
+  .nav__toggle {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: var(--space-2);
+    z-index: 101;
+  }
+
+  .nav__toggle-bar {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: var(--color-dark);
+    transition: transform var(--duration-base) var(--ease-out),
+                opacity var(--duration-fast);
+  }
+
+  /* Mobile */
+  @media (max-width: 1023px) {
+    .nav__toggle {
+      display: flex;
+    }
+
+    .nav__links {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--color-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity var(--duration-base) var(--ease-out),
+                  visibility var(--duration-base);
+    }
+
+    .nav__links.is-open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .nav__list {
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-8);
+    }
+
+    .nav__link {
+      font-size: var(--text-2xl);
+      font-family: var(--font-heading);
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    /* Hamburger animation */
+    .nav__toggle.is-active .nav__toggle-bar:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+
+    .nav__toggle.is-active .nav__toggle-bar:nth-child(2) {
+      opacity: 0;
+    }
+
+    .nav__toggle.is-active .nav__toggle-bar:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+  }
+</style>
